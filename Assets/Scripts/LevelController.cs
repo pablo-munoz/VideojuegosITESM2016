@@ -8,6 +8,8 @@ public class LevelController : MonoBehaviour {
 
 	public GameObject groundPrefab;
 	public GameObject wallPrefab;
+	public GameObject keyPrefab;
+	public int minimumKeyDistance = 6;
 
 	private enum COMPONENTS { NOTHING, FLOOR, WALL };
 
@@ -32,6 +34,9 @@ public class LevelController : MonoBehaviour {
 				}
 			}
 		}
+
+		BlueprintPosition keyPosition = Toolbox.singleton.getRandomTileAtDistance (11, 5, minimumKeyDistance);
+		Instantiate(keyPrefab, new Vector3(keyPosition.x, keyPosition.y, 0), Quaternion.identity);
 	}
 	
 	// Update is called once per frame

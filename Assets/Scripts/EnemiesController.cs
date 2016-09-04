@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class EnemiesController : MonoBehaviour {
 
@@ -7,7 +8,7 @@ public class EnemiesController : MonoBehaviour {
 	public GameObject enemyPrefab;
 
 	void Start () {
-		BoardPosition spawnPosition;
+		BlueprintPosition spawnPosition;
 
 		for (int i = 0; i < numEnemies; i++) {
 			spawnPosition = Toolbox.singleton.getRandomSpawnPosition ();

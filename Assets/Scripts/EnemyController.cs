@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class EnemyController : MonoBehaviour {
 
@@ -7,13 +8,15 @@ public class EnemyController : MonoBehaviour {
 	public float treshold = 0.7f;
 	public float speed = 0.7f;
 	public float radius = 1f;
+	public int patrolDistance = 6;
 
 	private GameObject[] patrolMarkers;
 	private int current;
+	private int direction = 1;
 
 	void Start () {
 		current = 0;
-		patrolMarkers = new GameObject[2];
+		patrolMarkers = new GameObject[patrolDistance];
 
 		float x = transform.position.x;
 		float y = transform.position.y;
@@ -24,10 +27,16 @@ public class EnemyController : MonoBehaviour {
 		float x2 = -x1;
 		float y2 = -y1;
 
-		patrolMarkers [0] = (GameObject) Instantiate (
-			patrolMarker, new Vector3 (x1, y1, 0), Quaternion.identity);
-		patrolMarkers [1] = (GameObject) Instantiate (
-			patrolMarker, new Vector3 (x2, y2, 0), Quaternion.identity);
+		List<BlueprintPosition> patrolPath = new List<BlueprintPosition> ();
+		Toolbox.singleton.findTraversablePath ((int) x, (int) y, patrolDistance, patrolPath, null);
+
+		int i = 0;
+		foreach (BlueprintPosition patrolPos in patrolPath) {
+			patrolMarkers [i] = (GameObject) Instantiate (
+				patrolMarker, new Vector3 (patrolPos.x, patrolPos.y, 0), Quaternion.identity);
+			i++;
+		}
+
 	}
 		
 	void Update () {
@@ -36,9 +45,14 @@ public class EnemyController : MonoBehaviour {
 		transform.position = Vector3.MoveTowards (
 			transform.position, patrolMarkers[current].transform.position, speed * Time.deltaTime);
 
+		if (current == 0) {
+			direction = 1;
+		} else if (current == patrolMarkers.Length - 1) {
+			direction = -1;
+		}
+
 		if (distance < treshold) {
-			current++; 
-			current %= patrolMarkers.Length;
+			current += direction; 
 		}
 	}
 }
