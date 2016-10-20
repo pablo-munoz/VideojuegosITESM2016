@@ -21,6 +21,7 @@ public class Toolbox : MonoBehaviour {
 	public int[,] blueprint;
 	public int numRows;
 	public int numCols;
+	public enum COMPONENTS { NOTHING, FLOOR, WALL };
 
 	void Awake () {
 		if (!singleton) {

@@ -11,22 +11,22 @@ public class LevelController : MonoBehaviour {
 	public GameObject keyPrefab;
 	public int minimumKeyDistance = 6;
 
-	private enum COMPONENTS { NOTHING, FLOOR, WALL };
-
 	void Start () {
 		int[,] blueprint = Toolbox.singleton.blueprint;
 
-		int rows = blueprint.GetLength(0);
-		int cols = blueprint.GetLength(1);
+		int nRows = blueprint.GetLength(0);
+		int nCols = blueprint.GetLength(1);
+
+		GameObject[,] tiles = new GameObject[nRows, nCols];
 			
-		for (int row = 0; row < rows; row++) {
-			for (int col = 0; col < cols; col++) {
+		for (int row = 0; row < nRows; row++) {
+			for (int col = 0; col < nCols; col++) {
 				switch (blueprint[row,col]) {
-				case (int) COMPONENTS.FLOOR:
-					Instantiate (groundPrefab, new Vector3 (col, row, 0), Quaternion.identity);
+				case (int) Toolbox.COMPONENTS.FLOOR:
+					tiles[row,col] = Instantiate (groundPrefab, new Vector3 (col, row, 0), Quaternion.identity) as GameObject;
 					break;
-				case (int) COMPONENTS.WALL:
-					Instantiate (wallPrefab, new Vector3 (col, row, 0), Quaternion.identity);
+				case (int) Toolbox.COMPONENTS.WALL:
+					tiles[row,col] = Instantiate (wallPrefab, new Vector3 (col, row, 0), Quaternion.identity) as GameObject;
 					break;
 				default:
 					// Add nothing
