@@ -21,12 +21,6 @@ public class EnemyController : MonoBehaviour {
 		float x = transform.position.x;
 		float y = transform.position.y;
 
-		float angle = Random.value * 2 * Mathf.PI;
-		float x1 = x + (radius * Mathf.Cos (angle));
-		float y1 = y + (radius * Mathf.Sin (angle));
-		float x2 = -x1;
-		float y2 = -y1;
-
 		List<BlueprintPosition> patrolPath = new List<BlueprintPosition> ();
 		Toolbox.singleton.findTraversablePath ((int) x, (int) y, patrolDistance, patrolPath, null);
 

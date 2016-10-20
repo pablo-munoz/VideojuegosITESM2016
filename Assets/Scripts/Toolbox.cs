@@ -26,6 +26,10 @@ public class Toolbox : MonoBehaviour {
 	void Awake () {
 		if (!singleton) {
 			singleton = this;
+
+//			TextAsset levelJson = Resources.Load("level1") as TextAsset;
+//			blueprint = JsonHelper.getJsonArray(levelJson.text);
+
 			blueprint = new int[,]{
 				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 0 },
 				{ 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 0 },
@@ -40,6 +44,7 @@ public class Toolbox : MonoBehaviour {
 				{ 2, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 				{ 2, 2, 1, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 			};
+
 			numRows = blueprint.GetLength (0);
 			numCols = blueprint.GetLength (1);
 			DontDestroyOnLoad (gameObject);
