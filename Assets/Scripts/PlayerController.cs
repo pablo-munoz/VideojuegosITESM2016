@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
 
@@ -45,6 +46,17 @@ public class PlayerController : MonoBehaviour {
 				// Become invulnerable for a little while
 				isInvulnerable = true;
 				this.Invoke ("loseInvulnerability", INVULNERABILITY_SECONDS);
+			}
+		} else if (other.gameObject.CompareTag ("Goal")) {
+			SceneManager.LoadScene ("WinScreen");
+		}
+	}
+
+	private void OnTriggerEnter2D(Collider2D other) {
+		if (other.gameObject.CompareTag ("Food")) {
+			if (this.hitPoints < INITIAL_HP) {
+				Destroy (other.gameObject);
+				this.hitPoints++;
 			}
 		}
 	}

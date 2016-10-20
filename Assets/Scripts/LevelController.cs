@@ -12,6 +12,9 @@ public class LevelController : MonoBehaviour {
 	public GameObject groundPrefab;
 	public GameObject wallPrefab;
 	public GameObject keyPrefab;
+	public GameObject foodPrefab;
+	public GameObject goalPrefab;
+	public int numFoodPerLevel;
 	public int minimumKeyDistance = 6;
 
 	private JsonData levelData;
@@ -36,6 +39,8 @@ public class LevelController : MonoBehaviour {
 		int nCols = (int)levelData ["cols"];
 		playerSpawnX = (int) levelData ["playerSpawnX"];
 		playerSpawnY = (int) levelData ["playerSpawnY"];
+		int goalX = (int)levelData ["goalX"];
+		int goalY = (int)levelData ["goalY"];
 		GameObject tilePrefab = groundPrefab;
 
 		for (int i = 0; i < nRows; i++) {
@@ -53,35 +58,18 @@ public class LevelController : MonoBehaviour {
 			}
 		}
 
+		// Spawn the goal
+		Instantiate(goalPrefab, new Vector2(goalX, goalY), Quaternion.identity);
+
 		// Spawn the key to the next level
 		Tile keySpawn = Tile.getRandomFloorTile (playerSpawnX, playerSpawnY, MINIMUM_KEY_DELTA_DISTANCE);
-		Instantiate(keyPrefab, new Vector3(keySpawn.x, keySpawn.y, 0), Quaternion.identity);
+		Instantiate(keyPrefab, new Vector2(keySpawn.x, keySpawn.y), Quaternion.identity);
 
-//		int[,] blueprint = Toolbox.singleton.blueprint;
-//
-//		int nRows = blueprint.GetLength(0);
-//		int nCols = blueprint.GetLength(1);
-//
-//		GameObject[,] tiles = new GameObject[nRows, nCols];
-//			
-//		for (int row = 0; row < nRows; row++) {
-//			for (int col = 0; col < nCols; col++) {
-//				switch (blueprint[row,col]) {
-//				case (int) Toolbox.COMPONENTS.FLOOR:
-//					tiles[row,col] = Instantiate (groundPrefab, new Vector3 (col, row, 0), Quaternion.identity) as GameObject;
-//					break;
-//				case (int) Toolbox.COMPONENTS.WALL:
-//					tiles[row,col] = Instantiate (wallPrefab, new Vector3 (col, row, 0), Quaternion.identity) as GameObject;
-//					break;
-//				default:
-//					// Add nothing
-//					break;
-//				}
-//			}
-//		}
-//
-//		BlueprintPosition keyPosition = Toolbox.singleton.getRandomTileAtDistance (11, 5, minimumKeyDistance);
-//		Instantiate(keyPrefab, new Vector3(keyPosition.x, keyPosition.y, 0), Quaternion.identity);
+		// Spawn the food (power ups)
+		for (int i = 0; i < numFoodPerLevel; i++) {
+			Tile foodSpawn = Tile.getRandomFloorTile ();
+			Instantiate (foodPrefab, new Vector2 (foodSpawn.x, foodSpawn.y), Quaternion.identity);
+		}
 	}
 	
 	// Update is called once per frame
