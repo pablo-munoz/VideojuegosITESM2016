@@ -4,74 +4,55 @@ using System.Collections.Generic;
 
 public class Pathfinding : MonoBehaviour {
 
-	public static List<GameObject> AStar(int originX, int originY, int destX, int destY){ 
+	public static List<Tile> AStar(Tile origin, Tile destination){ 
+		List<Tile> visited = new List<Tile> ();
+		List<Tile> frontier = new List<Tile> ();
+		origin.history = new List<Tile> ();
+
+		visited.Add (origin);
+		frontier.Add (origin);
+
+		origin.g = 0;
+		origin.f = origin.g + Vector2.Distance (origin.transform.position, destination.transform.position);
+
+		while (frontier.Count > 0) {
+			int smallest = 0;
+
+			for (int i = 0; i < frontier.Count; i++) {
+				if (frontier [i].f < frontier [smallest].f) {
+					smallest = i;
+				}
+			}
+
+			Tile smallestTile = frontier [smallest];
+			frontier.Remove (smallestTile);
+
+			if (smallestTile == destination) {
+				List<Tile> result = new List<Tile> (smallestTile.history);
+				result.Add (smallestTile);
+				return result;
+			} else {
+				List<Tile> neighbours = Tile.getNeighboursOf (smallestTile);
+				for (int i = 0; i < neighbours.Count; i++) {
+					Tile currentNeighbour = neighbours [i];
+
+					if (!visited.Contains (currentNeighbour)) {
+						visited.Add (currentNeighbour);
+						frontier.Add (currentNeighbour);
+
+						currentNeighbour.g = smallestTile.g +
+						Vector2.Distance (smallestTile.transform.position, currentNeighbour.transform.position);
+
+						float h = Vector2.Distance (currentNeighbour.transform.position, destination.transform.position);
+						currentNeighbour.f = currentNeighbour.g + h;
+
+						currentNeighbour.history = new List<Tile> (smallestTile.history);
+						currentNeighbour.history.Add (smallestTile);
+					}
+				}
+			}
+		}
 		return null;
 	}
-//
-//		List<Node> visited = new List<Node> ();
-//		List<Node> work = new List<Node> ();
-//
-//		visited.Add (start);
-//		work.Add (start);
-//
-//		start.history = new List<Node> ();
-//		start.g = 0;
-//		start.f = start.g + 
-//			Vector3.Distance (start.transform.position, end.transform.position);
-//
-//		while (work.Count > 0) {
-//
-//			// get the best one (the smallest f)
-//
-//			int smallest = 0;
-//
-//			for(int i = 0; i < work.Count; i++) {
-//				if(work[i].f < work[smallest].f){
-//					smallest = i;
-//				}
-//			}
-//
-//			Node smallestNode = work[smallest];
-//
-//			// remove from working list
-//			work.Remove(smallestNode);
-//
-//			if (smallestNode == end) {
-//				// found	
-//				List<Node> result = new List<Node>(smallestNode.history);
-//				result.Add (smallestNode);
-//				return result;
-//
-//			} else {
-//
-//				// not found
-//				for(int i = 0; i < smallestNode.neighbors.Length; i++){
-//					Node currentChild = smallestNode.neighbors[i];
-//
-//					if (!visited.Contains (currentChild)) {
-//
-//						visited.Add (currentChild);
-//						work.Add (currentChild);
-//
-//						// f, g, h
-//						currentChild.g = smallestNode.g +
-//							Vector3.Distance (currentChild.transform.position, 
-//								smallestNode.transform.position);
-//
-//						float h = Vector3.Distance (currentChild.transform.position,
-//							end.transform.position);
-//
-//						currentChild.f = currentChild.g + h;
-//
-//						// update history
-//						currentChild.history = new List<Node>(smallestNode.history);
-//						currentChild.history.Add (smallestNode);
-//					}
-//				}
-//			}
-//		}
-//
-//		return null; 
-//	}
-
+		
 }

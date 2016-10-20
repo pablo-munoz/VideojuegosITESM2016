@@ -12,16 +12,19 @@ public class PlayerController : MonoBehaviour {
 	private int hitPoints;
 
 	private Rigidbody2D rb;
+	private LevelController levelController;
 	private bool isInAttackMode;
 	private bool canEnterAttackMode;
 	private bool isInvulnerable;
 
 	private void Start () {
 		rb = GetComponent<Rigidbody2D> ();
+		levelController = GameObject.Find ("Level").GetComponent<LevelController>();
 		hitPoints = INITIAL_HP;
 		isInvulnerable = false;
 		isInAttackMode = false;
 		canEnterAttackMode = true;
+		transform.position = new Vector2 (levelController.playerSpawnX, levelController.playerSpawnY);
 	}
 
 	private void Update () {
