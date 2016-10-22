@@ -7,7 +7,7 @@ public class Tile : MonoBehaviour {
 	public int x, y, type;
 	public List<Tile> history;
 
-	public static List<Tile> allTiles = new List<Tile> ();
+	public static List<GameObject> allTiles = new List<GameObject> ();
 	public static List<Tile> wallTiles = new List<Tile> ();
 	public static List<Tile> floorTiles = new List<Tile> ();
 	public static Tile[,] indexedTiles = new Tile[100,100];   // Ugly hack, lets try not to hardcode the size
@@ -28,7 +28,7 @@ public class Tile : MonoBehaviour {
 		tile.type = type;
 		tile.x = x;
 		tile.y = y;
-		allTiles.Add (tile);
+		allTiles.Add (obj);
 		indexedTiles [x,y] = tile;
 
 		if (type == 1) {
@@ -38,6 +38,16 @@ public class Tile : MonoBehaviour {
 		}
 
 		return tile;
+	}
+
+	public static void destroyAllTiles() {
+		wallTiles = new List<Tile>();
+		floorTiles = new List<Tile>();
+		for(int i = 0; i < allTiles.Count; i++) {
+			Destroy(allTiles[i]);
+		}
+		allTiles = new List<GameObject>();
+		indexedTiles = new Tile[100, 100];
 	}
 
 	public static Tile getRandomFloorTile() {

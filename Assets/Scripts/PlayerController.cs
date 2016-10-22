@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
 
@@ -25,7 +24,6 @@ public class PlayerController : MonoBehaviour {
 		isInvulnerable = false;
 		isInAttackMode = false;
 		canEnterAttackMode = true;
-		transform.position = new Vector2 (levelController.playerSpawnX, levelController.playerSpawnY);
 	}
 
 	private void Update () {
@@ -34,6 +32,12 @@ public class PlayerController : MonoBehaviour {
 		rb.velocity = new Vector2 (x * movementSpeed, y * movementSpeed);
 
 		checkForAttackCommand ();
+	}
+
+	private void OnCollisionEnter2D(Collision2D other) {
+		if (other.gameObject.CompareTag ("Goal")) {
+			this.levelController.loadNextLevel ();
+		}
 	}
 
 	private void OnCollisionStay2D(Collision2D other) {
@@ -47,8 +51,6 @@ public class PlayerController : MonoBehaviour {
 				isInvulnerable = true;
 				this.Invoke ("loseInvulnerability", INVULNERABILITY_SECONDS);
 			}
-		} else if (other.gameObject.CompareTag ("Goal")) {
-			SceneManager.LoadScene ("WinScreen");
 		}
 	}
 
@@ -86,7 +88,7 @@ public class PlayerController : MonoBehaviour {
 		isInAttackMode = false;
 	}
 
-	private void allowAtackMode() {
+	private void allowAttackMode() {
 		canEnterAttackMode = true;
 	}
 }

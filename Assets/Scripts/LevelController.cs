@@ -4,53 +4,77 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using LitJson;
+using UnityEngine.SceneManagement;
 
 public class LevelController : MonoBehaviour {
 
-	private int MINIMUM_KEY_DELTA_DISTANCE = 15;
+	private const int MINIMUM_KEY_DELTA_DISTANCE = 10;
+	private const int MINIMUM_ENEMY_SPAWN_DISTANCE = 5;
 
 	public GameObject groundPrefab;
 	public GameObject wallPrefab;
 	public GameObject keyPrefab;
 	public GameObject foodPrefab;
 	public GameObject goalPrefab;
-	public int numFoodPerLevel;
+	public GameObject enemyPrefab;
+	public int numFoodPerLevel = 4;
+	public int numLevels;
 	public int minimumKeyDistance = 6;
+	public int numEnemies = 5;
+	public int levelSize = 15; // must be an odd number
 
+	private GameObject player;
 	private JsonData levelData;
-	private int _playerSpawnX;
-	private int _playerSpawnY;
-
-	public int playerSpawnX {
-		private set { _playerSpawnX = value; }
-		get { return _playerSpawnX; }
-	}
-
-	public int playerSpawnY {
-		private set { _playerSpawnY = value; }
-		get { return _playerSpawnY; }
-	}
-
+	private List<Maze> levels;
+	private List<GameObject> levelObjects;
+	private int currentLevel;
+	private bool newLevelCooldown;
 
 	void Awake () {
-		TextAsset levelJson = Resources.Load<TextAsset> ("level1");
-		levelData = JsonMapper.ToObject (levelJson.text);
-		int nRows = (int)levelData ["rows"];
-		int nCols = (int)levelData ["cols"];
-		playerSpawnX = (int) levelData ["playerSpawnX"];
-		playerSpawnY = (int) levelData ["playerSpawnY"];
-		int goalX = (int)levelData ["goalX"];
-		int goalY = (int)levelData ["goalY"];
+//		TextAsset levelJson = Resources.Load<TextAsset> ("nivel3");
+//		levelData = JsonMapper.ToObject (levelJson.text);
+		levels = new List<Maze> ();
+
+		for (int i = 0; i < this.numLevels; i++) {
+			levels.Add (new Maze (this.levelSize, this.levelSize));
+		}
+
+		currentLevel = 0;
+
+		player = GameObject.Find ("Player");
+		levelObjects = new List<GameObject> ();
+		this.constructLevel();
+	}
+	
+	public void constructLevel() {
+		Tile.destroyAllTiles ();
+		for (int i = 0; i < levelObjects.Count; i++) {
+			Destroy (levelObjects [i]);
+		}
+		levelObjects = new List<GameObject> ();
+
+		int nRows = this.levels [this.currentLevel].nRows;
+		int nCols = this.levels [this.currentLevel].nCols;
+		int playerSpawnX = 2;
+		int playerSpawnY = 2;
+		int goalX = 0;
+		int goalY = 0;
 		GameObject tilePrefab = groundPrefab;
+
+		int[,] lab = this.levels [this.currentLevel].getMaze ();
 
 		for (int i = 0; i < nRows; i++) {
 			for (int j = 0; j < nCols; j++) {
-				int type = (int)levelData ["blueprint"] [i] [j];
+				int type = lab[i,j];
 
 				if (type > 0) {
-					if (type == (int) Toolbox.COMPONENTS.FLOOR) {
+					if (type == 1) {
 						tilePrefab = groundPrefab;
-					} else if (type == (int) Toolbox.COMPONENTS.WALL) {
+					} else if (type == 4) {
+						tilePrefab = groundPrefab;
+						goalX = j;
+						goalY = i;
+					} else if (type == 2) {
 						tilePrefab = wallPrefab;
 					}
 					Tile.make (tilePrefab, j, nRows - i, type);
@@ -59,21 +83,46 @@ public class LevelController : MonoBehaviour {
 		}
 
 		// Spawn the goal
-		Instantiate(goalPrefab, new Vector2(goalX, goalY), Quaternion.identity);
+		levelObjects.Add (
+			Instantiate (goalPrefab, new Vector2 (goalX, goalY), Quaternion.identity) as GameObject);
 
 		// Spawn the key to the next level
 		Tile keySpawn = Tile.getRandomFloorTile (playerSpawnX, playerSpawnY, MINIMUM_KEY_DELTA_DISTANCE);
-		Instantiate(keyPrefab, new Vector2(keySpawn.x, keySpawn.y), Quaternion.identity);
+		levelObjects.Add(
+			Instantiate(this.keyPrefab, new Vector2(keySpawn.x, keySpawn.y), Quaternion.identity) as GameObject);
 
 		// Spawn the food (power ups)
 		for (int i = 0; i < numFoodPerLevel; i++) {
 			Tile foodSpawn = Tile.getRandomFloorTile ();
-			Instantiate (foodPrefab, new Vector2 (foodSpawn.x, foodSpawn.y), Quaternion.identity);
+			levelObjects.Add(
+				Instantiate (this.foodPrefab, new Vector2 (foodSpawn.x, foodSpawn.y), Quaternion.identity) as GameObject);
+		}
+
+		// Spawn the enemies
+		for (int i = 0; i < numEnemies; i++) {
+			Tile enemySpawnPosition = Tile.getRandomFloorTile (
+				playerSpawnX, playerSpawnY, MINIMUM_ENEMY_SPAWN_DISTANCE);
+			levelObjects.Add(
+				Instantiate (enemyPrefab, new Vector3 (enemySpawnPosition.x, enemySpawnPosition.y, 0), Quaternion.identity)
+				as GameObject);
+		}
+			
+		player.transform.position = new Vector2 (playerSpawnX, playerSpawnY);
+	}
+
+	public void loadNextLevel() {
+		++this.currentLevel;
+		Debug.Log (this.currentLevel);
+
+		if (this.currentLevel >= this.numLevels) {
+			SceneManager.LoadScene ("WinScreen", LoadSceneMode.Single);
+		} else {
+			this.constructLevel ();
 		}
 	}
-	
-	// Update is called once per frame
-	void Update () {
 
+	private void resetNewLevelCooldown() {
+		this.newLevelCooldown = false;
 	}
+		
 }
