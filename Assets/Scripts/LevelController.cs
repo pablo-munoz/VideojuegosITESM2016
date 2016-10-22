@@ -15,9 +15,11 @@ public class LevelController : MonoBehaviour {
 	public GameObject wallPrefab;
 	public GameObject keyPrefab;
 	public GameObject foodPrefab;
+	public GameObject pickaxePrefab;
 	public GameObject goalPrefab;
 	public GameObject enemyPrefab;
 	public int numFoodPerLevel = 4;
+	public int numPickaxesPerLevel = 1;
 	public int numLevels;
 	public int minimumKeyDistance = 6;
 	public int numEnemies = 5;
@@ -98,6 +100,13 @@ public class LevelController : MonoBehaviour {
 				Instantiate (this.foodPrefab, new Vector2 (foodSpawn.x, foodSpawn.y), Quaternion.identity) as GameObject);
 		}
 
+		// Spawn pickaxes
+		for (int i = 0; i < numPickaxesPerLevel; i++) {
+			Tile pickaxeSpawn = Tile.getRandomFloorTile ();
+			levelObjects.Add(
+				Instantiate (this.pickaxePrefab, new Vector2 (pickaxeSpawn.x, pickaxeSpawn.y), Quaternion.identity) as GameObject);
+		}
+
 		// Spawn the enemies
 		for (int i = 0; i < numEnemies; i++) {
 			Tile enemySpawnPosition = Tile.getRandomFloorTile (
@@ -112,7 +121,6 @@ public class LevelController : MonoBehaviour {
 
 	public void loadNextLevel() {
 		++this.currentLevel;
-		Debug.Log (this.currentLevel);
 
 		if (this.currentLevel >= this.numLevels) {
 			SceneManager.LoadScene ("WinScreen", LoadSceneMode.Single);

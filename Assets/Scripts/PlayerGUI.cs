@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerGUI : MonoBehaviour {
 	public Texture heartImage;
+	public Texture2D pickaxeImage;
 	public PlayerController player;
 
 	void Start() {
@@ -17,6 +19,11 @@ public class PlayerGUI : MonoBehaviour {
 		ImagesForInteger(player.getHitPoints(), heartImage);
 		GUILayout.FlexibleSpace();
 		GUILayout.EndHorizontal();
+
+		GUILayout.BeginHorizontal ();
+		GUILayout.Label (pickaxeImage);
+		GUILayout.Label ("x" + this.player.getNumPickaxes());
+
 		GUILayout.EndArea();
 	}
 

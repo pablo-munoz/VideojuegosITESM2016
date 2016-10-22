@@ -40,6 +40,20 @@ public class Tile : MonoBehaviour {
 		return tile;
 	}
 
+	public static void destroy(int x, int y) {
+		Tile tile = indexedTiles [x, y];
+		allTiles.Remove (tile.gameObject);
+		wallTiles.Remove (tile);
+		floorTiles.Remove (tile);
+		indexedTiles [x, y] = null;
+		Destroy (tile.gameObject);
+	}
+
+	public static Tile replace(GameObject prefab, int x, int y, int type) {
+		destroy (x, y);
+		return make (prefab, x, y, type);
+	}
+
 	public static void destroyAllTiles() {
 		wallTiles = new List<Tile>();
 		floorTiles = new List<Tile>();
