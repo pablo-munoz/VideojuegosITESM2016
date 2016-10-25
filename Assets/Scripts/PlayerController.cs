@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
 
@@ -24,6 +25,7 @@ public class PlayerController : MonoBehaviour {
 	private bool isInvulnerable;
 	private int numPickaxes = 1;
 	private int direction;
+    private int key;
 
 	private void Start () {
 		rb = GetComponent<Rigidbody2D> ();
@@ -34,6 +36,7 @@ public class PlayerController : MonoBehaviour {
 		isInAttackMode = false;
 		canEnterAttackMode = true;
 		direction = WEST;
+        key = 0;
 	}
 
 	private void Update () {
@@ -65,24 +68,34 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void OnCollisionEnter2D(Collision2D other) {
-		if (other.gameObject.CompareTag ("Goal")) {
-			this.levelController.loadNextLevel ();
-		}
-	}
 
-	private void OnCollisionStay2D(Collision2D other) {
+        if (key == 1){
+            if (other.gameObject.CompareTag("Goal"))
+            {
+                key = 0;    
+                this.levelController.loadNextLevel();
+                Debug.Log("Key used");
+            }
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D other) {
 		if (other.gameObject.CompareTag ("Enemy")) {
 			if (isInAttackMode) {
 				Destroy (other.gameObject);
 			} else if (!isInvulnerable) {
 				// Lose hp
 				this.hitPoints--;
+                //You die
+                if(this.hitPoints == 0){
+                    SceneManager.LoadScene("Gameover", LoadSceneMode.Single);
+                }
 				// Become invulnerable for a little while
 				isInvulnerable = true;
 				this.Invoke ("loseInvulnerability", INVULNERABILITY_SECONDS);
 			}
 		}
-	}
+    }
 
 	private void OnTriggerEnter2D(Collider2D other) {
 		if (other.gameObject.CompareTag ("Food")) {
@@ -93,13 +106,17 @@ public class PlayerController : MonoBehaviour {
 		} else if (other.gameObject.CompareTag ("PickAxe")) {
 			Destroy (other.gameObject);
 			this.numPickaxes++;
-		}
-	}
+		} else if (other.gameObject.CompareTag("Key")) {
+            Destroy(other.gameObject);
+            key++;
+            Debug.Log("Key = 1");
+        }
+    }
 
 	public int getHitPoints() {
 		return this.hitPoints;
 	}
-
+            
 	public int getNumPickaxes() {
 		return this.numPickaxes;
 	}

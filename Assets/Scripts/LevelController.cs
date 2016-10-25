@@ -57,7 +57,7 @@ public class LevelController : MonoBehaviour {
 
 		int nRows = this.levels [this.currentLevel].nRows;
 		int nCols = this.levels [this.currentLevel].nCols;
-		int playerSpawnX = 2;
+		int playerSpawnX = 1;
 		int playerSpawnY = 2;
 		int goalX = 0;
 		int goalY = 0;
