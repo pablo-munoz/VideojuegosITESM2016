@@ -3,7 +3,7 @@ using System.Collections;
 
 public class ChaserController : MonoBehaviour {
 
-	//necesita hacer contacto con las paredes.
+	//si hace contacto con las paredes.
 
 	public float treshold = 0.7f;
 	public float speed = 0.7f;
