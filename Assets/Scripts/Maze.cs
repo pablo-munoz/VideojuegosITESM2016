@@ -116,8 +116,82 @@ public class Maze {
 			}
 		}
 
-		// We wanted to make the mazer "wider" so we take the previously generated maze
-		// and insert two more grounds to the right of wherever a ground exist
+		// We wanted to make the mazer "wider" so that the player can have some
+		// more freedom of movement. This is actually an interetsting problem as
+		// we cannot just put another ground tile to the right of a given one
+		// (this would work fine for "vertical" path as it would make them wider
+		// but it would not work for "horizontal paths" as it would only make them
+		// longer). In the case of horizontal paths we want to put a ground tile
+		// above or below but how do we chose? That is, how do we determine which
+		// tile is part of a "vertical" or a "horizontal" path?
+		this.enlargeRows ();
+		this.enlargeCols ();
+		// this.thinWalls ();
+	}
+
+	private void enlargeRows() {
+		int newRows = this.nRows * 2 - 2;
+		int newCols = this.nCols; 
+		int[,] larger = new int[newRows, newCols];
+
+		for (int i = 0; i < newRows; i++) {
+			for (int j = 0; j < newCols; j++) {
+				if (i == 0 || i == newRows - 1 || j == 0 || j == newCols - 1)
+					larger [i, j] = WALL;
+			}
+		}
+
+		for (int i = 1; i < newCols - 1; i++) {
+			for (int j = 1; j < newRows - 1; j++) {
+				larger [j, i] = this.maze [j / 2 + 1, i];
+				larger [j + 1, i] = this.maze [j / 2 + 1, i];
+				j++;
+			}
+		}
+
+		this.nRows = newRows;
+		this.nCols = newCols;
+		this.maze = larger;
+	}
+
+	private void enlargeCols() {
+		int newRows = this.nRows;
+		int newCols = this.nCols * 2 - 2; 
+		int[,] larger = new int[newRows, newCols];
+
+		for (int i = 0; i < newRows; i++) {
+			for (int j = 0; j < newCols; j++) {
+				if (i == 0 || i == newRows - 1 || j == 0 || j == newCols - 1)
+					larger [i, j] = WALL;
+			}
+		}
+
+		for (int i = 1; i < newRows - 1; i++) {
+			for (int j = 1; j < newCols - 1; j++) {
+				larger [i, j] = this.maze [i, j / 2 + 1];
+				larger [i, j + 1] = this.maze [i, j / 2 + 1];
+				j++;
+			}
+		}
+
+		this.nRows = newRows;
+		this.nCols = newCols;
+		this.maze = larger;
+	}
+
+	private void thinWalls() {
+		for (int i = 1; i < this.nRows - 2; i++) {
+			for (int j = 1; j < this.nCols - 2; j++) {
+				if (this.areCoordsValid(i, j - 1) && this.maze[i, j-1] == FLOOR && 
+					this.maze [i, j] == WALL && this.areCoordsValid (i, j + 1) && this.maze [i, j + 1] == WALL) {
+					this.maze [i, j] = FLOOR;
+				}
+			}
+		}
+	}
+
+	private bool areCoordsValid(int rowNum, int colNum) {
+		return rowNum >= 0 && rowNum < this.nRows && colNum >= 0 && colNum < this.nCols;
 	}
 
 	private Cell getRandomNextCell() {

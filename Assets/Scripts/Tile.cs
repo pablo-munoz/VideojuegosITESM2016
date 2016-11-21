@@ -96,7 +96,7 @@ public class Tile : MonoBehaviour {
 		int y = (int) tile.transform.position.y;
 		List<Tile> neighbours = new List<Tile> ();
 		// might be wrong, lower bound might be zero, same with upper, might be off by 1
-		if (x > 1 && indexedTiles [x - 1, y].type == 1)
+		if (x > 1 && (indexedTiles [x - 1, y].type - 1 <= 0))
 			neighbours.Add (indexedTiles [x - 1, y]);
 		
 		if (x < numCols - 1 && indexedTiles [x + 1, y].type == 1)

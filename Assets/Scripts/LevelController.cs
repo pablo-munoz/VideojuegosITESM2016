@@ -70,7 +70,8 @@ public class LevelController : MonoBehaviour {
 				int type = lab[i,j];
 
 				if (type > 0) {
-					if (type == 1) {
+					// Make 0 also be an alias for ground
+					if (type == 1 || type == 0) {
 						tilePrefab = groundPrefab;
 					} else if (type == 4) {
 						tilePrefab = groundPrefab;
