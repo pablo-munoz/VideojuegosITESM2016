@@ -115,6 +115,9 @@ public class Maze {
 				this.guide = this.pathVisited.Pop ();
 			}
 		}
+
+		// We wanted to make the mazer "wider" so we take the previously generated maze
+		// and insert two more grounds to the right of wherever a ground exist
 	}
 
 	private Cell getRandomNextCell() {

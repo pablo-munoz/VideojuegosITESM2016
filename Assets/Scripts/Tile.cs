@@ -10,7 +10,7 @@ public class Tile : MonoBehaviour {
 	public static List<GameObject> allTiles = new List<GameObject> ();
 	public static List<Tile> wallTiles = new List<Tile> ();
 	public static List<Tile> floorTiles = new List<Tile> ();
-	public static Tile[,] indexedTiles = new Tile[100,100];   // Ugly hack, lets try not to hardcode the size
+	public static Tile[,] indexedTiles = new Tile[250,250];   // Ugly hack, lets try not to hardcode the size
 	public static int numRows = 0;
 	public static int numCols = 0;
 
