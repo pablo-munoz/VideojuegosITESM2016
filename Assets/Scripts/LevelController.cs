@@ -25,7 +25,10 @@ public class LevelController : MonoBehaviour {
 	public int minimumKeyDistance = 6;
 	public int numEnemies = 5;
 	public int levelSize = 15; // must be an odd number
-	public Sprite boundaryWall;
+	public Sprite boundaryWall1;
+	public Sprite boundaryWall2;
+	public Sprite removeableWall1;
+	public Sprite removeableWall2;
 
 	private GameObject player;
 	private JsonData levelData;
@@ -83,9 +86,22 @@ public class LevelController : MonoBehaviour {
 						tilePrefab = wallPrefab;
 					}
 					Tile tile = Tile.make (tilePrefab, j, nRows - i, type);
-					if (tile.isBoundary ()) {
+
+					if (type == 2) {
 						SpriteRenderer spt = tile.GetComponent<SpriteRenderer> ();
-						spt.sprite = boundaryWall;
+						if (tile.isBoundary ()) {
+							if (UnityEngine.Random.Range (0f, 1f) > 0.5f) {
+								spt.sprite = boundaryWall1;
+							} else {
+								spt.sprite = boundaryWall2;
+							}
+						} else {
+							if (UnityEngine.Random.Range (0f, 1f) > 0.5f) {
+								spt.sprite = removeableWall1;
+							} else {
+								spt.sprite = removeableWall2;
+							}
+						}
 					}
 				}
 			}
