@@ -18,12 +18,14 @@ public class LevelController : MonoBehaviour {
 	public GameObject pickaxePrefab;
 	public GameObject goalPrefab;
 	public GameObject enemyPrefab;
+	public GameObject bossPrefab;
 	public int numFoodPerLevel = 4;
 	public int numPickaxesPerLevel = 1;
 	public int numLevels;
 	public int minimumKeyDistance = 6;
 	public int numEnemies = 5;
 	public int levelSize = 15; // must be an odd number
+	public Sprite boundaryWall;
 
 	private GameObject player;
 	private JsonData levelData;
@@ -66,7 +68,7 @@ public class LevelController : MonoBehaviour {
 		int[,] lab = this.levels [this.currentLevel].getMaze ();
 
 		for (int i = 0; i < nRows; i++) {
-			for (int j = 0; j < nCols; j++) {
+			for (int j = 0; j < nCols; j++)  {
 				int type = lab[i,j];
 
 				if (type > 0) {
@@ -80,7 +82,11 @@ public class LevelController : MonoBehaviour {
 					} else if (type == 2) {
 						tilePrefab = wallPrefab;
 					}
-					Tile.make (tilePrefab, j, nRows - i, type);
+					Tile tile = Tile.make (tilePrefab, j, nRows - i, type);
+					if (tile.isBoundary ()) {
+						SpriteRenderer spt = tile.GetComponent<SpriteRenderer> ();
+						spt.sprite = boundaryWall;
+					}
 				}
 			}
 		}
@@ -116,6 +122,10 @@ public class LevelController : MonoBehaviour {
 				Instantiate (enemyPrefab, new Vector3 (enemySpawnPosition.x, enemySpawnPosition.y, 0), Quaternion.identity)
 				as GameObject);
 		}
+
+		// Spawn the boss
+		Tile bossSpawnPosition = Tile.getRandomFloorTile(playerSpawnX, playerSpawnY, MINIMUM_ENEMY_SPAWN_DISTANCE);
+		Instantiate (bossPrefab, new Vector3 (bossSpawnPosition.x, bossSpawnPosition.y, 0), Quaternion.identity);
 			
 		player.transform.position = new Vector2 (playerSpawnX, playerSpawnY);
 	}

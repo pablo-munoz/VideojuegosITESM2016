@@ -95,8 +95,7 @@ public class Tile : MonoBehaviour {
 		int x = (int) tile.transform.position.x;
 		int y = (int) tile.transform.position.y;
 		List<Tile> neighbours = new List<Tile> ();
-		// might be wrong, lower bound might be zero, same with upper, might be off by 1
-		if (x > 1 && (indexedTiles [x - 1, y].type - 1 <= 0))
+		if (x > 1 && (indexedTiles [x - 1, y].type == 1))
 			neighbours.Add (indexedTiles [x - 1, y]);
 		
 		if (x < numCols - 1 && indexedTiles [x + 1, y].type == 1)
@@ -109,5 +108,17 @@ public class Tile : MonoBehaviour {
 			neighbours.Add (indexedTiles [x, y+1]);
 
 		return neighbours;
+	}
+
+	public static Vector2 delta(Tile fromTile, Tile toTile) {
+		return new Vector2 (toTile.x - fromTile.x, toTile.y - fromTile.y);
+	}
+
+	public string ToString() {
+		return "Tile(" + this.x + "," + this.y + ")";
+	}
+
+	public bool isBoundary() {
+		return this.x == 0 || this.y == 1 || this.x == numCols || this.y == numRows;
 	}
 }

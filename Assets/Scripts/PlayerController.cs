@@ -11,8 +11,11 @@ public class PlayerController : MonoBehaviour {
 
 	public const int INITIAL_HP = 5;
 	public const float INVULNERABILITY_SECONDS = 1.5f;
-	public const float ATTACK_MODE_DURATION = 1f;
+	public const float ATTACK_MODE_DURATION = 0.5f;
 	public const float ATTACK_MODE_COOLDOWN = 3f;
+
+	private Material painMaterial = null;
+	private Material defaultMaterial = null;
 
 	public float movementSpeed;
 	private int hitPoints;
@@ -23,14 +26,18 @@ public class PlayerController : MonoBehaviour {
 	private bool isInAttackMode;
 	private bool canEnterAttackMode;
 	private bool isInvulnerable;
-	private int numPickaxes = 1;
+	private int numPickaxes = 2;
 	private int direction;
     private int key;
+	private Renderer renderer;
 
 	private void Start () {
-		rb = GetComponent<Rigidbody2D> ();
+		rb = this.GetComponent<Rigidbody2D> ();
 		anim = this.GetComponent<Animator> ();
 		levelController = GameObject.Find ("Level").GetComponent<LevelController>();
+		renderer = this.GetComponent<Renderer> ();
+		defaultMaterial = renderer.material;
+		painMaterial = Resources.Load ("Materials/Pain", typeof(Material)) as Material;
 		hitPoints = INITIAL_HP;
 		isInvulnerable = false;
 		isInAttackMode = false;
@@ -56,7 +63,7 @@ public class PlayerController : MonoBehaviour {
 		} else if (y < 0) {
 			direction = SOUTH;
 			speedVector.y = -1f;
-		} else {
+		} else {             
 			speedVector.x = 0;
 			speedVector.y = 0;
 		}
@@ -84,6 +91,7 @@ public class PlayerController : MonoBehaviour {
 			if (isInAttackMode) {
 				Destroy (other.gameObject);
 			} else if (!isInvulnerable) {
+				this.feelPain ();
 				// Lose hp
 				this.hitPoints--;
                 //You die
@@ -105,13 +113,22 @@ public class PlayerController : MonoBehaviour {
 			}
 		} else if (other.gameObject.CompareTag ("PickAxe")) {
 			Destroy (other.gameObject);
-			this.numPickaxes++;
+			this.numPickaxes += 2;
 		} else if (other.gameObject.CompareTag("Key")) {
             Destroy(other.gameObject);
             key++;
             Debug.Log("Key = 1");
         }
     }
+
+	private void feelPain() {
+		renderer.material = painMaterial;
+		this.Invoke ("resetPain", 0.85f);
+	}
+
+	private void resetPain() {
+		renderer.material = this.defaultMaterial;
+	}
 
 	public int getHitPoints() {
 		return this.hitPoints;
@@ -136,10 +153,14 @@ public class PlayerController : MonoBehaviour {
 
 			RaycastHit2D hit = Physics2D.Raycast (new Vector2(this.transform.position.x, this.transform.position.y) + rayDirection, rayDirection, 0);
 			if (hit && hit.collider.gameObject.CompareTag ("Wall")) {
-				this.numPickaxes--;
-				int x = (int) hit.collider.transform.position.x;
-				int y = (int) hit.collider.transform.position.y;
-				Tile.replace (levelController.groundPrefab, x, y, 1);
+				Tile candidate = hit.collider.gameObject.GetComponent<Tile> ();
+				if (!candidate.isBoundary ()) {
+					Debug.Log ("@" + candidate.x + "," + candidate.y);
+					this.numPickaxes--;
+					int x = (int)hit.collider.transform.position.x;
+					int y = (int)hit.collider.transform.position.y;
+					Tile.replace (levelController.groundPrefab, x, y, 1);
+				}
 			}
 		}
 	}
@@ -169,5 +190,9 @@ public class PlayerController : MonoBehaviour {
 
 	private void allowAttackMode() {
 		canEnterAttackMode = true;
+	}
+
+	public Tile tileAt() {
+		return Tile.getTileAtPosition ((int) Mathf.Round(transform.position.x), (int) Mathf.Round(transform.position.y));
 	}
 }
