@@ -88,8 +88,8 @@ public class PlayerController : MonoBehaviour {
 
     private void OnCollisionStay2D(Collision2D other) {
 		if (other.gameObject.CompareTag ("Enemy")) {
-			if (isInAttackMode) {
-				Destroy (other.gameObject);
+			if (Input.GetKeyDown(KeyCode.Space)) {
+				other.gameObject.GetComponent<EnemyController> ().getAttacked ();;
 			} else if (!isInvulnerable) {
 				this.feelPain ();
 				// Lose hp
@@ -100,6 +100,7 @@ public class PlayerController : MonoBehaviour {
                 }
 				// Become invulnerable for a little while
 				isInvulnerable = true;
+				anim.SetBool ("isInAttackMode", this.isInAttackMode);
 				this.Invoke ("loseInvulnerability", INVULNERABILITY_SECONDS);
 			}
 		}
@@ -122,12 +123,11 @@ public class PlayerController : MonoBehaviour {
     }
 
 	private void feelPain() {
-		renderer.material = painMaterial;
-		this.Invoke ("resetPain", 0.85f);
+		anim.Play ("PlayerDamaged");
 	}
 
 	private void resetPain() {
-		renderer.material = this.defaultMaterial;
+		anim.Play ("Playerloop");
 	}
 
 	public int getHitPoints() {
@@ -141,21 +141,12 @@ public class PlayerController : MonoBehaviour {
 	private void checkForPickAxeUse() {
 		if (this.numPickaxes > 0 && Input.GetKeyUp (KeyCode.F)) {
 			Vector2 rayDirection = new Vector2 ();
-			if (direction == NORTH) {
-				rayDirection = Vector2.up;
-			} else if (direction == WEST) {
-				rayDirection = Vector2.right;
-			} else if (direction == SOUTH) {
-				rayDirection = Vector2.down;
-			} else if (direction == EAST) {
-				rayDirection = Vector2.left;
-			}
-
-			RaycastHit2D hit = Physics2D.Raycast (new Vector2(this.transform.position.x, this.transform.position.y) + rayDirection, rayDirection, 0);
+			rayDirection = this.rb.velocity;
+			Vector2 center = (Vector2) transform.position;
+			RaycastHit2D hit = Physics2D.Raycast (center, rayDirection, 1f);
 			if (hit && hit.collider.gameObject.CompareTag ("Wall")) {
 				Tile candidate = hit.collider.gameObject.GetComponent<Tile> ();
 				if (!candidate.isBoundary ()) {
-					Debug.Log ("@" + candidate.x + "," + candidate.y);
 					this.numPickaxes--;
 					int x = (int)hit.collider.transform.position.x;
 					int y = (int)hit.collider.transform.position.y;
@@ -169,6 +160,7 @@ public class PlayerController : MonoBehaviour {
 		if (canEnterAttackMode && Input.GetKeyUp (KeyCode.Space)) {
 			// Enter attack mode
 			isInAttackMode = true;
+			anim.SetBool ("isInAttackMode", this.isInAttackMode);
 			// Mark an attack mode cooldown so user cannot spam attack key
 			canEnterAttackMode = true;
 			anim.Play ("Attack");
@@ -181,11 +173,12 @@ public class PlayerController : MonoBehaviour {
 
 	private void loseInvulnerability() {
 		isInvulnerable = false;
+		anim.SetBool ("isInvulnerable", this.isInAttackMode);
 	}
 
 	private void endAttackMode() {
 		isInAttackMode = false;
-		anim.Play ("PlayerLoop");
+		anim.SetBool ("isInAttackMode", this.isInAttackMode);
 	}
 
 	private void allowAttackMode() {
