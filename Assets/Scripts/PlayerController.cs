@@ -88,7 +88,7 @@ public class PlayerController : MonoBehaviour {
 
     private void OnCollisionStay2D(Collision2D other) {
 		if (other.gameObject.CompareTag ("Enemy")) {
-			if (Input.GetKeyDown(KeyCode.Space)) {
+			if (isInAttackMode) {
 				other.gameObject.GetComponent<EnemyController> ().getAttacked ();;
 			} else if (!isInvulnerable) {
 				this.feelPain ();
@@ -160,6 +160,7 @@ public class PlayerController : MonoBehaviour {
 		if (canEnterAttackMode && Input.GetKeyUp (KeyCode.Space)) {
 			// Enter attack mode
 			isInAttackMode = true;
+			isInvulnerable = true;
 			anim.SetBool ("isInAttackMode", this.isInAttackMode);
 			// Mark an attack mode cooldown so user cannot spam attack key
 			canEnterAttackMode = true;
@@ -179,6 +180,7 @@ public class PlayerController : MonoBehaviour {
 	private void endAttackMode() {
 		isInAttackMode = false;
 		anim.SetBool ("isInAttackMode", this.isInAttackMode);
+		isInvulnerable = false;
 	}
 
 	private void allowAttackMode() {
