@@ -9,7 +9,6 @@ public class BossCastingBehaviour : MonoBehaviour {
 	}
 
 	IEnumerable castMagic() {
-		Debug.Log ("Casting magic");
 		yield return new WaitForSeconds(3f);
 	}
 }

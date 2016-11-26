@@ -127,7 +127,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void checkForPickAxeUse() {
-		if (this.numPickaxes > 0 && Input.GetKeyUp (KeyCode.F)) {
+		if (this.numPickaxes > 0 && (Input.GetKeyDown (KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))) {
 			Vector2 rayDirection = new Vector2 ();
 			rayDirection = this.rb.velocity;
 			Vector2 center = (Vector2) transform.position;
