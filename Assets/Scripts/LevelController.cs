@@ -107,15 +107,17 @@ public class LevelController : MonoBehaviour {
 			}
 		}
 
+		bool isLastLevel = currentLevel == (numLevels - 1);
+
 		// Spawn the goal
 		GameObject goal = Instantiate (goalPrefab, new Vector2 (goalX, goalY), Quaternion.identity) as GameObject;
-		goal.tag = "NonObstacle";
 		levelObjects.Add (goal);
 
 		// Spawn the key to the next level
-		Tile keySpawn = Tile.getRandomFloorTile (playerSpawnX, playerSpawnY, MINIMUM_KEY_DELTA_DISTANCE);
-		levelObjects.Add(
-			Instantiate(this.keyPrefab, new Vector2(keySpawn.x, keySpawn.y), Quaternion.identity) as GameObject);
+		if (!isLastLevel) {
+			Tile keySpawn = Tile.getRandomFloorTile (playerSpawnX, playerSpawnY, MINIMUM_KEY_DELTA_DISTANCE);
+			this.addKey (keySpawn);
+		}
 
 		// Spawn the food (power ups)
 		for (int i = 0; i < numFoodPerLevel; i++) {
@@ -137,11 +139,11 @@ public class LevelController : MonoBehaviour {
 		}
 
 		// Spawn the boss
-		Tile bossSpawnPosition = Tile.getRandomFloorTile(playerSpawnX, playerSpawnY, MINIMUM_ENEMY_SPAWN_DISTANCE);
-		GameObject boss = Instantiate (bossPrefab, new Vector3 (bossSpawnPosition.x, bossSpawnPosition.y, 0), Quaternion.identity) as GameObject;
-		boss.AddComponent<BossController> ();
-		Animator anim = boss.AddComponent<Animator> ();
-		anim.runtimeAnimatorController = Resources.Load ("NecromancerController") as RuntimeAnimatorController;
+		if (isLastLevel) {
+			Tile bossSpawnPosition = Tile.getRandomFloorTile (playerSpawnX, playerSpawnY, MINIMUM_ENEMY_SPAWN_DISTANCE);
+			GameObject boss = Instantiate (bossPrefab, new Vector3 (bossSpawnPosition.x, bossSpawnPosition.y, 0), Quaternion.identity) as GameObject;
+		}
+
 		player.transform.position = new Vector2 (playerSpawnX, playerSpawnY);
 	}
 
@@ -163,6 +165,12 @@ public class LevelController : MonoBehaviour {
 		GameObject newEnemy = Instantiate (enemyPrefab, new Vector3 (spawn.x, spawn.y, 0), Quaternion.identity) as GameObject;
 		levelObjects.Add(newEnemy);
 		return newEnemy;
+	}
+
+	public GameObject addKey(Tile spawn) {
+		GameObject newKey = Instantiate (this.keyPrefab, new Vector2 (spawn.x, spawn.y), Quaternion.identity) as GameObject;
+		levelObjects.Add (newKey);
+		return keyPrefab;
 	}
 		
 }

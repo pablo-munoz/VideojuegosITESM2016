@@ -12,7 +12,6 @@ public class BossIdleBehaviour : MonoBehaviour {
 		level = GameObject.Find ("Level").GetComponent<LevelController>();
 		bc = GetComponent<BossController> ();
 		StartCoroutine ("summonEnemy");
-		Debug.Log ("Boss resting");
 	}
 	
 	// Update is called once per frame
@@ -22,7 +21,8 @@ public class BossIdleBehaviour : MonoBehaviour {
 
 	IEnumerator summonEnemy() {
 		while (true) {
-			GameObject summon = level.addEnemy (Tile.getTileAtPosition ((int)transform.position.x, (int)transform.position.y));
+			GameObject summon = level.addEnemy (bc.getTileAt());
+			summon.GetComponent<EnemyController> ().beginPatrolling (level.levelSize);
 			yield return new WaitForSeconds (15f);
 		}
 	}

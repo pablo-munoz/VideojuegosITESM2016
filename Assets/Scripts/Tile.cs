@@ -115,11 +115,15 @@ public class Tile : MonoBehaviour {
 		return new Vector2 (toTile.x - fromTile.x, toTile.y - fromTile.y);
 	}
 
-	public string ToString() {
+	public override string ToString() {
 		return "Tile(" + this.x + "," + this.y + ")";
 	}
 
 	public bool isBoundary() {
 		return this.x == 0 || this.y == 1 || this.x == numCols || this.y == numRows;
+	}
+
+	public Vector3 getPosition3() {
+		return new Vector3 (this.x, this.y, 0);
 	}
 }

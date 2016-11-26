@@ -16,7 +16,7 @@ public class EnemyController : MonoBehaviour {
 	public int patrolDistance = 6;
 
 	private Rigidbody2D rb;
-	private Renderer renderer;
+	private new Renderer renderer;
 	private Material painMaterial = null;
 	private Material defaultMaterial = null;
 	private PlayerController player;
@@ -28,9 +28,9 @@ public class EnemyController : MonoBehaviour {
 	private int indexInPath;
 	private int direction;
 	private bool chasingPlayer;
-	private int hp;
+	public int hp;
 	private Animator anim;
-	private Collider2D collider;
+	private new Collider2D collider;
 
 	void Start () {
 		this.renderer = GetComponent<Renderer> ();
@@ -44,14 +44,11 @@ public class EnemyController : MonoBehaviour {
 		// with the player position
 		this.player = GameObject.Find ("Player").GetComponent<PlayerController>();
 
-		this.hp = 2;
-
-		this.beginPatrolling ();
+		this.beginPatrolling (this.patrolDistance);
 		StartCoroutine (goTowardsPlayerMaybe());
 	}
 		
 	void Update () {
-		float distanceFromNextTarget = Vector3.Distance (transform.position, this.positionOfNextTile ());
 		float delta;
 		Vector2 dirVector = Vector2.zero;
 		Tile next;
@@ -98,11 +95,11 @@ public class EnemyController : MonoBehaviour {
 		return this.path [indexInPath].transform.position;
 	}
 
-	private void beginPatrolling() {
+	public void beginPatrolling(int delta) {
 		this.chasingPlayer = false;
-		anim.SetBool ("chasingPlayer", this.chasingPlayer);
+		if (anim != null) anim.SetBool ("chasingPlayer", this.chasingPlayer);
 		Tile currentPosition = this.tileAt ();
-		this.pathDestination = Tile.getRandomFloorTile (currentPosition, patrolDistance);
+		this.pathDestination = Tile.getRandomFloorTile (currentPosition, delta);
 		this.path = Pathfinding.AStar (currentPosition, pathDestination);
 		this.indexInPath = 0;
 		this.direction = 1;
@@ -138,11 +135,11 @@ public class EnemyController : MonoBehaviour {
 				    this.isPlayerInSight (Vector2.down)) {
 					this.beginChasingPlayer ();
 				} else if (this.chasingPlayer && Vector2.Distance (transform.position, player.transform.position) > PLAYER_DETECTION_RANGE) {
-					this.beginPatrolling ();
+					this.beginPatrolling (this.patrolDistance);
 				}
 			} else {
 				if (this.pathToPlayer.Count >= PLAYER_DETECTION_RANGE) {
-					this.beginPatrolling ();
+					this.beginPatrolling (this.patrolDistance);
 				}
 			}
 			yield return new WaitForSeconds (1.5f);
@@ -163,7 +160,9 @@ public class EnemyController : MonoBehaviour {
 	}
 
 	public void OnCollisionEnter2D (Collision2D collision) {
-		if (collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "NonObstacle") {
+		if (collision.gameObject.tag == "Enemy" ||
+			collision.gameObject.tag == "Boss" ||
+			collision.gameObject.tag == "Goal") {
 			Physics2D.IgnoreCollision(collision.collider, collider);
 		}
 

@@ -11,8 +11,8 @@ public class PlayerController : MonoBehaviour {
 
 	public const int INITIAL_HP = 5;
 	public const float INVULNERABILITY_SECONDS = 1.5f;
-	public const float ATTACK_MODE_DURATION = 0.5f;
-	public const float ATTACK_MODE_COOLDOWN = 3f;
+	public const float ATTACK_MODE_DURATION = 1f;
+	public const float ATTACK_MODE_COOLDOWN = 1f;
 
 	private Material painMaterial = null;
 	private Material defaultMaterial = null;
@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour {
 	private int numPickaxes = 2;
 	private int direction;
     private int key;
-	private Renderer renderer;
+	private new Renderer renderer;
 
 	private void Start () {
 		rb = this.GetComponent<Rigidbody2D> ();
@@ -75,13 +75,11 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void OnCollisionEnter2D(Collision2D other) {
-
-        if (key == 1){
+        if (this.key > 0){
             if (other.gameObject.CompareTag("Goal"))
             {
-                key = 0;    
+                this.key = 0;    
                 this.levelController.loadNextLevel();
-                Debug.Log("Key used");
             }
         }
     }
@@ -92,9 +90,8 @@ public class PlayerController : MonoBehaviour {
 				// Lose hp
 				this.hitPoints--;
                 //You die
-                if(this.hitPoints == 0){
-                    SceneManager.LoadScene("Gameover", LoadSceneMode.Single);
-                }
+				this.checkForDeath();
+
 				// Become invulnerable for a little while
 				isInvulnerable = true;
 				anim.SetBool ("isInvulnerable", this.isInvulnerable);
@@ -112,11 +109,30 @@ public class PlayerController : MonoBehaviour {
 		} else if (other.gameObject.CompareTag ("PickAxe")) {
 			Destroy (other.gameObject);
 			this.numPickaxes += 2;
-		} else if (other.gameObject.CompareTag("Key")) {
-            Destroy(other.gameObject);
-            key++;
-        }
+		} else if (other.gameObject.CompareTag ("Key")) {
+			Destroy (other.gameObject);
+			key++;
+		} else if (other.gameObject.CompareTag ("BossMagic")) {
+			Destroy (other.gameObject);
+			if (!isInvulnerable) {
+				// Lose hp
+				this.hitPoints--;
+				//You die
+				this.checkForDeath();
+
+				// Become invulnerable for a little while
+				isInvulnerable = true;
+				anim.SetBool ("isInvulnerable", this.isInvulnerable);
+				this.Invoke ("loseInvulnerability", INVULNERABILITY_SECONDS);
+			}
+		}
     }
+
+	private void checkForDeath() {
+		if(this.hitPoints == 0){
+			SceneManager.LoadScene("Gameover", LoadSceneMode.Single);
+		}
+	}
 		
 	public int getHitPoints() {
 		return this.hitPoints;
@@ -145,17 +161,14 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void checkForAttackCommand() {
-		if (canEnterAttackMode && Input.GetKeyUp (KeyCode.Space)) {
+		if (Input.GetKeyDown(KeyCode.Space)) {
 			// Enter attack mode
 			isInAttackMode = true;
 			anim.SetBool ("isInAttackMode", this.isInAttackMode);
-			// Mark an attack mode cooldown so user cannot spam attack key
-			canEnterAttackMode = true;
-			anim.Play ("Attack");
 			// Schedule attack mode to end
 			Invoke("endAttackMode", ATTACK_MODE_DURATION);
 			// Schedule attack mode cooldown to end a.k.a. user is allowed to enter attack mode again
-			Invoke ("allowAttackMode", ATTACK_MODE_DURATION + ATTACK_MODE_COOLDOWN);
+			//Invoke ("allowAttackMode", ATTACK_MODE_DURATION + ATTACK_MODE_COOLDOWN);
 		}
 	}
 
@@ -175,6 +188,11 @@ public class PlayerController : MonoBehaviour {
 
 	public Tile tileAt() {
 		return Tile.getTileAtPosition ((int) Mathf.Round(transform.position.x), (int) Mathf.Round(transform.position.y));
+	}
+
+	// alias
+	public Tile getTileAt() {
+		return this.tileAt ();
 	}
 
 	public bool isAttacking() {
