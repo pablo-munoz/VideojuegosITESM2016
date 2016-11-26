@@ -108,8 +108,9 @@ public class LevelController : MonoBehaviour {
 		}
 
 		// Spawn the goal
-		levelObjects.Add (
-			Instantiate (goalPrefab, new Vector2 (goalX, goalY), Quaternion.identity) as GameObject);
+		GameObject goal = Instantiate (goalPrefab, new Vector2 (goalX, goalY), Quaternion.identity) as GameObject;
+		goal.tag = "NonObstacle";
+		levelObjects.Add (goal);
 
 		// Spawn the key to the next level
 		Tile keySpawn = Tile.getRandomFloorTile (playerSpawnX, playerSpawnY, MINIMUM_KEY_DELTA_DISTANCE);
@@ -132,17 +133,15 @@ public class LevelController : MonoBehaviour {
 
 		// Spawn the enemies
 		for (int i = 0; i < numEnemies; i++) {
-			Tile enemySpawnPosition = Tile.getRandomFloorTile (
-				playerSpawnX, playerSpawnY, MINIMUM_ENEMY_SPAWN_DISTANCE);
-			levelObjects.Add(
-				Instantiate (enemyPrefab, new Vector3 (enemySpawnPosition.x, enemySpawnPosition.y, 0), Quaternion.identity)
-				as GameObject);
+			this.addEnemy (Tile.getRandomFloorTile (playerSpawnX, playerSpawnY, MINIMUM_ENEMY_SPAWN_DISTANCE));
 		}
 
 		// Spawn the boss
 		Tile bossSpawnPosition = Tile.getRandomFloorTile(playerSpawnX, playerSpawnY, MINIMUM_ENEMY_SPAWN_DISTANCE);
-		Instantiate (bossPrefab, new Vector3 (bossSpawnPosition.x, bossSpawnPosition.y, 0), Quaternion.identity);
-			
+		GameObject boss = Instantiate (bossPrefab, new Vector3 (bossSpawnPosition.x, bossSpawnPosition.y, 0), Quaternion.identity) as GameObject;
+		boss.AddComponent<BossController> ();
+		Animator anim = boss.AddComponent<Animator> ();
+		anim.runtimeAnimatorController = Resources.Load ("NecromancerController") as RuntimeAnimatorController;
 		player.transform.position = new Vector2 (playerSpawnX, playerSpawnY);
 	}
 
@@ -158,6 +157,12 @@ public class LevelController : MonoBehaviour {
 
 	private void resetNewLevelCooldown() {
 		this.newLevelCooldown = false;
+	}
+
+	public GameObject addEnemy(Tile spawn) {
+		GameObject newEnemy = Instantiate (enemyPrefab, new Vector3 (spawn.x, spawn.y, 0), Quaternion.identity) as GameObject;
+		levelObjects.Add(newEnemy);
+		return newEnemy;
 	}
 		
 }

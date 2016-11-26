@@ -23,6 +23,7 @@ public class Tile : MonoBehaviour {
 			numRows = y;
 		
 		GameObject obj = Instantiate (prefab, new Vector3 (x, y, 0), Quaternion.identity) as GameObject;
+		obj.tag = "Wall";
 		obj.AddComponent<Tile> ();
 		Tile tile = obj.GetComponent<Tile> ();
 		tile.type = type;

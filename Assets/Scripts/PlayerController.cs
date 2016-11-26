@@ -88,10 +88,7 @@ public class PlayerController : MonoBehaviour {
 
     private void OnCollisionStay2D(Collision2D other) {
 		if (other.gameObject.CompareTag ("Enemy")) {
-			if (Input.GetKeyDown(KeyCode.Space)) {
-				other.gameObject.GetComponent<EnemyController> ().getAttacked ();;
-			} else if (!isInvulnerable) {
-				this.feelPain ();
+			if (!isInvulnerable) {
 				// Lose hp
 				this.hitPoints--;
                 //You die
@@ -100,7 +97,7 @@ public class PlayerController : MonoBehaviour {
                 }
 				// Become invulnerable for a little while
 				isInvulnerable = true;
-				anim.SetBool ("isInAttackMode", this.isInAttackMode);
+				anim.SetBool ("isInvulnerable", this.isInvulnerable);
 				this.Invoke ("loseInvulnerability", INVULNERABILITY_SECONDS);
 			}
 		}
@@ -118,18 +115,9 @@ public class PlayerController : MonoBehaviour {
 		} else if (other.gameObject.CompareTag("Key")) {
             Destroy(other.gameObject);
             key++;
-            Debug.Log("Key = 1");
         }
     }
-
-	private void feelPain() {
-		anim.Play ("PlayerDamaged");
-	}
-
-	private void resetPain() {
-		anim.Play ("Playerloop");
-	}
-
+		
 	public int getHitPoints() {
 		return this.hitPoints;
 	}
@@ -173,7 +161,7 @@ public class PlayerController : MonoBehaviour {
 
 	private void loseInvulnerability() {
 		isInvulnerable = false;
-		anim.SetBool ("isInvulnerable", this.isInAttackMode);
+		anim.SetBool ("isInvulnerable", this.isInvulnerable);
 	}
 
 	private void endAttackMode() {
@@ -187,5 +175,9 @@ public class PlayerController : MonoBehaviour {
 
 	public Tile tileAt() {
 		return Tile.getTileAtPosition ((int) Mathf.Round(transform.position.x), (int) Mathf.Round(transform.position.y));
+	}
+
+	public bool isAttacking() {
+		return this.isInAttackMode;
 	}
 }

@@ -44,7 +44,7 @@ public class EnemyController : MonoBehaviour {
 		// with the player position
 		this.player = GameObject.Find ("Player").GetComponent<PlayerController>();
 
-		this.hp = 3;
+		this.hp = 2;
 
 		this.beginPatrolling ();
 		StartCoroutine (goTowardsPlayerMaybe());
@@ -163,7 +163,7 @@ public class EnemyController : MonoBehaviour {
 	}
 
 	public void OnCollisionEnter2D (Collision2D collision) {
-		if (collision.gameObject.tag == "Enemy") {
+		if (collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "NonObstacle") {
 			Physics2D.IgnoreCollision(collision.collider, collider);
 		}
 
