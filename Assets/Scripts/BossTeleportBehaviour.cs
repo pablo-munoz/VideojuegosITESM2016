@@ -14,9 +14,9 @@ public class BossTeleportBehaviour : MonoBehaviour {
 
 		// Summon 4 enemies for the hero to fight and teleport to a random location
 		for (int i = 0; i < 4; i++) {
-			Tile spawn = Tile.getRandomFloorTile (current.x, current.y, 3);
+			Tile spawn = Tile.getRandomFloorTile (current.x, current.y, 1, 4);
 			GameObject summon = level.addEnemy (spawn);
-			summon.GetComponent<EnemyController> ().beginPatrolling (level.levelSize);
+			summon.GetComponent<EnemyController> ().beginPatrolling (GameConstants.levelSize);
 		}
 
 		transform.position = Tile.getRandomFloorTile (current.x, current.y, 11).getPosition3();

@@ -19,12 +19,6 @@ public class LevelController : MonoBehaviour {
 	public GameObject goalPrefab;
 	public GameObject enemyPrefab;
 	public GameObject bossPrefab;
-	public int numFoodPerLevel = 4;
-	public int numPickaxesPerLevel = 1;
-	public int numLevels;
-	public int minimumKeyDistance = 6;
-	public int numEnemies = 5;
-	public int levelSize = 15; // must be an odd number
 	public Sprite boundaryWall1;
 	public Sprite boundaryWall2;
 	public Sprite removeableWall1;
@@ -42,8 +36,8 @@ public class LevelController : MonoBehaviour {
 //		levelData = JsonMapper.ToObject (levelJson.text);
 		levels = new List<Maze> ();
 
-		for (int i = 0; i < this.numLevels; i++) {
-			levels.Add (new Maze (this.levelSize, this.levelSize));
+		for (int i = 0; i < GameConstants.numLevels; i++) {
+			levels.Add (new Maze (GameConstants.levelSize, GameConstants.levelSize));
 		}
 
 		currentLevel = 0;
@@ -107,7 +101,7 @@ public class LevelController : MonoBehaviour {
 			}
 		}
 
-		bool isLastLevel = currentLevel == (numLevels - 1);
+		bool isLastLevel = currentLevel == (GameConstants.numLevels - 1);
 
 		// Spawn the goal
 		GameObject goal = Instantiate (goalPrefab, new Vector2 (goalX, goalY), Quaternion.identity) as GameObject;
@@ -120,21 +114,21 @@ public class LevelController : MonoBehaviour {
 		}
 
 		// Spawn the food (power ups)
-		for (int i = 0; i < numFoodPerLevel; i++) {
+		for (int i = 0; i < GameConstants.numFoodPerLevel; i++) {
 			Tile foodSpawn = Tile.getRandomFloorTile ();
 			levelObjects.Add(
 				Instantiate (this.foodPrefab, new Vector2 (foodSpawn.x, foodSpawn.y), Quaternion.identity) as GameObject);
 		}
 
 		// Spawn pickaxes
-		for (int i = 0; i < numPickaxesPerLevel; i++) {
+		for (int i = 0; i < GameConstants.numPickaxesPerLevel; i++) {
 			Tile pickaxeSpawn = Tile.getRandomFloorTile ();
 			levelObjects.Add(
 				Instantiate (this.pickaxePrefab, new Vector2 (pickaxeSpawn.x, pickaxeSpawn.y), Quaternion.identity) as GameObject);
 		}
 
 		// Spawn the enemies
-		for (int i = 0; i < numEnemies; i++) {
+		for (int i = 0; i < GameConstants.numEnemies; i++) {
 			this.addEnemy (Tile.getRandomFloorTile (playerSpawnX, playerSpawnY, MINIMUM_ENEMY_SPAWN_DISTANCE));
 		}
 
@@ -150,7 +144,7 @@ public class LevelController : MonoBehaviour {
 	public void loadNextLevel() {
 		++this.currentLevel;
 
-		if (this.currentLevel >= this.numLevels) {
+		if (this.currentLevel >= GameConstants.numLevels) {
 			SceneManager.LoadScene ("WinScreen", LoadSceneMode.Single);
 		} else {
 			this.constructLevel ();

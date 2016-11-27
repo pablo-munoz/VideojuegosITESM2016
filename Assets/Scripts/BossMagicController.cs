@@ -19,9 +19,9 @@ public class BossMagicController : MonoBehaviour {
 	IEnumerator destroyIfOutOfBounds() {
 		while (true) {
 			if (this.transform.position.x < 0 ||
-				this.transform.position.x > (level.levelSize * 2) ||
+				this.transform.position.x > (GameConstants.levelSize * 2) ||
 				this.transform.position.y < 0 ||
-				this.transform.position.y > (level.levelSize * 2)) {
+				this.transform.position.y > (GameConstants.levelSize * 2)) {
 				Destroy (gameObject);
 			}
 			yield return new WaitForSeconds (2f);

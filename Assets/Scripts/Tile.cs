@@ -84,6 +84,22 @@ public class Tile : MonoBehaviour {
 		return null;
 	}
 
+	public static Tile getRandomFloorTile(int x, int y, int minDelta, int maxDelta) {
+		Vector2 reference = new Vector2 (x, y);
+		List<Tile> candidates = new List<Tile> ();
+		for (int i = 0; i < floorTiles.Count; i++) {
+			if (Vector2.Distance (reference, floorTiles [i].transform.position) >= minDelta &&
+				Vector2.Distance (reference, floorTiles [i].transform.position) <= maxDelta) {
+				candidates.Add (floorTiles [i]);
+			}
+		}
+		if (candidates.Count > 0) {
+			return candidates [Random.Range (0, candidates.Count - 1)];
+		}
+
+		return null;
+	}
+
 	public static Tile getRandomFloorTile(Tile origin, int delta) {
 		return Tile.getRandomFloorTile ((int) origin.transform.position.x, (int) origin.transform.position.y, delta);
 	}

@@ -22,7 +22,7 @@ public class BossIdleBehaviour : MonoBehaviour {
 	IEnumerator summonEnemy() {
 		while (true) {
 			GameObject summon = level.addEnemy (bc.getTileAt());
-			summon.GetComponent<EnemyController> ().beginPatrolling (level.levelSize);
+			summon.GetComponent<EnemyController> ().beginPatrolling (GameConstants.levelSize);
 			yield return new WaitForSeconds (15f);
 		}
 	}
