@@ -10,7 +10,7 @@ using System.Collections.Generic;
 public class EnemyController : MonoBehaviour {
 
 	public float DEFAULT_SPEED = 0.07f;
-	public float CHASING_SPEED = 0.07f * 1.45f;
+	public float CHASING_SPEED = 0.1f * 1.45f;
 	public int PLAYER_DETECTION_RANGE = 8;
 	public float treshold = 0.5f;
 	public int patrolDistance = 6;

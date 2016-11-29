@@ -140,8 +140,8 @@ public class LevelController : MonoBehaviour {
 		}
 
 		// Spawn the boss
-		Tile bossSpawnPosition = Tile.getRandomFloorTile(playerSpawnX, playerSpawnY, MINIMUM_ENEMY_SPAWN_DISTANCE);
-		Instantiate (bossPrefab, new Vector3 (bossSpawnPosition.x, bossSpawnPosition.y, 0), Quaternion.identity);
+		//Tile bossSpawnPosition = Tile.getRandomFloorTile(playerSpawnX, playerSpawnY, MINIMUM_ENEMY_SPAWN_DISTANCE);
+		//Instantiate (bossPrefab, new Vector3 (bossSpawnPosition.x, bossSpawnPosition.y, 0), Quaternion.identity);
 			
 		player.transform.position = new Vector2 (playerSpawnX, playerSpawnY);
 	}
