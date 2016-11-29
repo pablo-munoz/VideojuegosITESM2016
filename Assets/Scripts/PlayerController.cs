@@ -197,6 +197,9 @@ public class PlayerController : MonoBehaviour {
 					int x = (int)hit.collider.transform.position.x;
 					int y = (int)hit.collider.transform.position.y;
 					Tile.replace (levelController.groundPrefab, x, y, 1);
+
+					//play sound
+					audio.PlayOneShot(attackAudio, 0.9f);
 				}
 			}
 		}
