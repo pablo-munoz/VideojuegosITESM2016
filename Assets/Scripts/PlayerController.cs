@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour {
 	public float movementSpeed;
 	private int hitPoints;
 
+    
 	private Rigidbody2D rb;
 	Animator anim;
 	private LevelController levelController;
@@ -31,6 +32,7 @@ public class PlayerController : MonoBehaviour {
     private int key;
 	private new Renderer renderer;
     private bool MoveL;
+
 	private void Start () {
 		rb = this.GetComponent<Rigidbody2D> ();
 		anim = this.GetComponent<Animator> ();
@@ -73,6 +75,16 @@ public class PlayerController : MonoBehaviour {
 
 		checkForAttackCommand ();
 		checkForPickAxeUse ();
+        if (rb.velocity.x < 0) {
+            MoveL = true;
+            anim.SetBool("MoveL", this.MoveL);
+        }else if(rb.velocity.x > 0){
+            MoveL = false;
+            anim.SetBool("MoveL", this.MoveL);
+        }
+
+
+     
 	}
 
 	private void OnCollisionEnter2D(Collision2D other) {
@@ -106,7 +118,7 @@ public class PlayerController : MonoBehaviour {
 		if (other.gameObject.CompareTag ("Food")) {
 			if (this.hitPoints < INITIAL_HP) {
 				Destroy (other.gameObject);
-				this.hitPoints++;
+				this.hitPoints++;   
 			}
 		} else if (other.gameObject.CompareTag ("PickAxe")) {
 			Destroy (other.gameObject);
