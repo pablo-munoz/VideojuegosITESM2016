@@ -30,7 +30,7 @@ public class PlayerController : MonoBehaviour {
 	private int direction;
     private int key;
 	private new Renderer renderer;
-
+    private bool MoveL;
 	private void Start () {
 		rb = this.GetComponent<Rigidbody2D> ();
 		anim = this.GetComponent<Animator> ();
@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour {
 		isInvulnerable = false;
 		isInAttackMode = false;
 		canEnterAttackMode = true;
+        MoveL = false;
 		direction = WEST;
         key = 0;
 	}
@@ -94,7 +95,8 @@ public class PlayerController : MonoBehaviour {
 
 				// Become invulnerable for a little while
 				isInvulnerable = true;
-				anim.SetBool ("isInvulnerable", this.isInvulnerable);
+
+                anim.SetBool ("isInvulnerable", this.isInvulnerable);
 				this.Invoke ("loseInvulnerability", INVULNERABILITY_SECONDS);
 			}
 		}
