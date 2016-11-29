@@ -2,6 +2,8 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(AudioSource))]
+
 public class PlayerController : MonoBehaviour {
 
 	public const int NORTH = 1;
@@ -20,6 +22,9 @@ public class PlayerController : MonoBehaviour {
 	public float movementSpeed;
 	private int hitPoints;
 
+	//audio
+	private AudioSource audio;
+	public AudioClip fruitAudio, dieAudio, attackAudio, damageAudio, itemAudio;
     
 	private Rigidbody2D rb;
 	Animator anim;
@@ -47,6 +52,7 @@ public class PlayerController : MonoBehaviour {
         MoveL = false;
 		direction = WEST;
         key = 0;
+		audio = this.GetComponent<AudioSource> ();
 	}
 
 	private void Update () {
@@ -102,11 +108,15 @@ public class PlayerController : MonoBehaviour {
 			if (!isInvulnerable) {
 				// Lose hp
 				this.hitPoints--;
+
                 //You die
 				this.checkForDeath();
 
 				// Become invulnerable for a little while
 				isInvulnerable = true;
+
+				//play sound
+				audio.PlayOneShot(damageAudio, 0.9f);
 
                 anim.SetBool ("isInvulnerable", this.isInvulnerable);
 				this.Invoke ("loseInvulnerability", INVULNERABILITY_SECONDS);
@@ -118,19 +128,34 @@ public class PlayerController : MonoBehaviour {
 		if (other.gameObject.CompareTag ("Food")) {
 			if (this.hitPoints < INITIAL_HP) {
 				Destroy (other.gameObject);
-				this.hitPoints++;   
+				this.hitPoints++;
+
+				//play sound
+				audio.PlayOneShot(fruitAudio, 1.7f);
 			}
 		} else if (other.gameObject.CompareTag ("PickAxe")) {
 			Destroy (other.gameObject);
 			this.numPickaxes += 2;
+
+			//play sound
+			audio.PlayOneShot(itemAudio, 1.7f);
+
 		} else if (other.gameObject.CompareTag ("Key")) {
 			Destroy (other.gameObject);
 			key++;
+
+			//play sound
+			audio.PlayOneShot(itemAudio, 1.7f);
+
 		} else if (other.gameObject.CompareTag ("BossMagic")) {
 			Destroy (other.gameObject);
 			if (!isInvulnerable) {
 				// Lose hp
 				this.hitPoints--;
+
+				//play sound
+				audio.PlayOneShot (damageAudio, 1.7f);
+
 				//You die
 				this.checkForDeath();
 
@@ -145,6 +170,9 @@ public class PlayerController : MonoBehaviour {
 	private void checkForDeath() {
 		if(this.hitPoints == 0){
 			SceneManager.LoadScene("Gameover", LoadSceneMode.Single);
+
+			//play sound
+			audio.PlayOneShot(dieAudio,1.7f);
 		}
 	}
 		
@@ -179,6 +207,8 @@ public class PlayerController : MonoBehaviour {
 			// Enter attack mode
 			isInAttackMode = true;
 			anim.SetBool ("isInAttackMode", this.isInAttackMode);
+			//play sound
+			audio.PlayOneShot(attackAudio, 0.9f);
 			// Schedule attack mode to end
 			Invoke("endAttackMode", ATTACK_MODE_DURATION);
 			// Schedule attack mode cooldown to end a.k.a. user is allowed to enter attack mode again
